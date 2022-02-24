@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"sort"
 
@@ -51,3 +53,17 @@ func GetTodoListHandler(w http.ResponseWriter r *http.Request){
 	rd.JSON(w, http.StatusOK, list)
 }
 
+func PostTodoHandler(w http.ResponseWriter r *http.Request){
+	var todo Todo
+	err := json.NewDecoder(r.Body).Decode(&todo)
+	if err != nil {
+		log.Fatal(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	lastID++
+	todo.ID = lastID
+	todoMap[lastID] = todo
+	rd.JSON(w, http.StatusCreated, todo)
+}
